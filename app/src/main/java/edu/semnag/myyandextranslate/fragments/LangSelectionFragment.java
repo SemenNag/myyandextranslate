@@ -1,4 +1,4 @@
-package edu.semnag.myyandextranslate.fragments.home;
+package edu.semnag.myyandextranslate.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -10,7 +10,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.foxykeep.datadroid.requestmanager.Request;
@@ -19,6 +18,7 @@ import com.foxykeep.datadroid.requestmanager.RequestManager;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.semnag.myyandextranslate.MainActivity;
 import edu.semnag.myyandextranslate.R;
 import edu.semnag.myyandextranslate.provider.TranslatorContract;
 import edu.semnag.myyandextranslate.request.TranslateRequestFactory;
@@ -33,7 +33,7 @@ public class LangSelectionFragment extends ListFragment
         RequestManager.RequestListener {
     private SimpleCursorAdapter mAdapter;
     private TranslateRequestManager requestManager;
-    private HomeFragment.ListFragmentItemClickListener asker;
+    private MainActivity.ListFragmentItemClickListener asker;
     private static final String[] PROJECTION = new String[]{TranslatorContract.SupportLangs._ID,
             TranslatorContract.SupportLangs.COLUMN_LANG_DESC
     };
@@ -47,7 +47,7 @@ public class LangSelectionFragment extends ListFragment
         String[] fromColumns = {TranslatorContract.SupportLangs.COLUMN_LANG_DESC};
         int[] toViews = {R.id.lang_selection_item};
 
-        mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.lang_selection_row,
+        mAdapter = new SimpleCursorAdapter(getActivity(), R.id.lang_selection_item,
                 null, fromColumns, toViews, 0);
         setListAdapter(mAdapter);
 
@@ -71,10 +71,11 @@ public class LangSelectionFragment extends ListFragment
 
     /**
      * Specifing item click listener
+     *
      * @param asker external listener
      *              for list clicked response
      */
-    public void setItemClickListener(HomeFragment.ListFragmentItemClickListener asker) {
+    public void setItemClickListener(MainActivity.ListFragmentItemClickListener asker) {
         this.asker = asker;
     }
 
@@ -112,7 +113,7 @@ public class LangSelectionFragment extends ListFragment
         String selectedLang = cursor.getString(cursor.getColumnIndex(TranslatorContract.SupportLangs.COLUMN_LANG_DESC));
 
         Map<String, String> mail = new HashMap<>();
-        mail.put(HomeFragment.ListFragmentItemClickListener.LANG_SELECTION, selectedLang);
+        mail.put(MainActivity.ListFragmentItemClickListener.LANG_SELECTION, selectedLang);
 
         asker.onListFragmentItemClicked(mail);
         getFragmentManager().beginTransaction().remove(this).commit();
