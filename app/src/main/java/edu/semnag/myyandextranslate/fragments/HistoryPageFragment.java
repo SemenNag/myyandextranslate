@@ -7,12 +7,12 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import edu.semnag.myyandextranslate.R;
+import edu.semnag.myyandextranslate.fragments.adapters.HistoryListAdapter;
 import edu.semnag.myyandextranslate.provider.TranslatorContract;
 
 /**
@@ -23,7 +23,7 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
     public static final String HISTORY_PAGE_TYPE = "HISTORY_PAGE_TYPE";
     public static final String HISTORY_PAGE = "HISTORY";
     public static final String HISTORY_FAV_PAGE = "FAVORITE";
-    private SimpleCursorAdapter simpleCursorAdapter;
+    private HistoryListAdapter simpleCursorAdapter;
     private static final String[] PROJECTION = new String[]{
             TranslatorContract.TranslateRegistry._ID,
             TranslatorContract.TranslateRegistry.COLUMN_NAME_SOURCE_TEXT,
@@ -39,25 +39,28 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
+
         String[] fromColumns = {
                 TranslatorContract.TranslateRegistry.COLUMN_NAME_SOURCE_TEXT,
                 TranslatorContract.TranslateRegistry.COLUMN_NAME_OUTPUT_TEXT,
                 TranslatorContract.TranslateRegistry.COLUMN_NAME_TRANSLATE_DIR,
                 TranslatorContract.TranslateRegistry.COLUMN_NAME_IS_FAV
         };
+
         int[] toViews = {
                 R.id.history_row_from,
                 R.id.history_row_to,
                 R.id.history_row_translate_direction,
-                R.id.history_row_fav};
+                R.id.checkBox};
 
-        simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.history_item,
-                null, fromColumns, toViews, 0);
+
+        simpleCursorAdapter = new HistoryListAdapter(getActivity(), null, fromColumns, toViews, 0);
         setListAdapter(simpleCursorAdapter);
 
         getLoaderManager().initLoader(0, getArguments(), this);
 
         return inflater.inflate(R.layout.fragment_history_list, container, false);
+
     }
 
     @Override
@@ -83,4 +86,5 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
     public void onLoaderReset(Loader<Cursor> loader) {
         simpleCursorAdapter.swapCursor(null);
     }
+
 }

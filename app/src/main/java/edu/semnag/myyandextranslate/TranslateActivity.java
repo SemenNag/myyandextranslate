@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.foxykeep.datadroid.requestmanager.Request;
@@ -98,7 +99,16 @@ public class TranslateActivity extends BaseActivity {
          * */
         fromLangSelectionView.setOnClickListener(new LangSelectionOnClickHandler());
         toLangSelectionView.setOnClickListener(new LangSelectionOnClickHandler());
-
+        /**
+         * creating icon for changing translate direction
+         * */
+        ImageView imageView = (ImageView) findViewById(R.id.changeTranslateDirection);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeTranslateDireaction();
+            }
+        });
         sourceTextView.setOnKeyListener(new TextView.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -122,6 +132,7 @@ public class TranslateActivity extends BaseActivity {
             toLangSelectionView.setText(restoreState.getString(KEY_LANG_TO_SELECTED));
         }
     }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -192,5 +203,13 @@ public class TranslateActivity extends BaseActivity {
     // FIXME: 13.04.2017 enlarge logic
     private boolean validateViewReadyToTranslate() {
         return true;
+    }
+
+
+    private void changeTranslateDireaction() {
+        String from = fromLangSelectionView.getText().toString();
+        String to = toLangSelectionView.getText().toString();
+        fromLangSelectionView.setText(to);
+        toLangSelectionView.setText(from);
     }
 }
