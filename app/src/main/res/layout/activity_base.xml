@@ -12,20 +12,18 @@
     <FrameLayout
         android:id="@+id/contentContainer"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="650dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent"></FrameLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
         android:layout_width="0dp"
-        android:layout_height="23dp"
+        android:layout_height="50dp"
         android:background="@color/colorAccent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/contentContainer"
         app:menu="@menu/navigation" />
 </android.support.constraint.ConstraintLayout>

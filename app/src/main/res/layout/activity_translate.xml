@@ -10,7 +10,6 @@
         android:id="@+id/fromLangSelection"
         android:layout_width="155dp"
         android:layout_height="50dp"
-        android:ems="10"
         android:focusable="false"
         android:inputType="textPersonName"
         android:text="Name"
@@ -19,9 +18,8 @@
 
     <EditText
         android:id="@+id/toLangSelection"
-        android:layout_width="162dp"
+        android:layout_width="155dp"
         android:layout_height="50dp"
-        android:ems="10"
         android:focusable="false"
         android:inputType="textPersonName"
         android:text="Name"
@@ -29,7 +27,7 @@
         app:layout_constraintRight_toRightOf="parent" />
 
     <ImageView
-        android:layout_width="43dp"
+        android:layout_width="50dp"
         android:layout_height="50dp"
         android:contentDescription="@string/change_translate_direction"
         android:src="@drawable/ic_translate_dir"
