@@ -7,15 +7,36 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import edu.semnag.myyandextranslate.fragments.history.HistoryFragment;
 import edu.semnag.myyandextranslate.fragments.home.HomeFragment;
 
+/**
+ * @author SemenNag
+ * This home activity contains home page with translations tools
+ * and plays role of parent activity for history activity in order to add nav bar to its child
+ * This activity contains FrameLaout which would be rebased according to nav option selected
+ * */
+
 public class MainActivity extends AppCompatActivity {
+    /**
+     * PrefsId which is used to store cross session user data
+     * */
     public static final String PREFS_NAME = "MyPrefsFile";
-
-
+    /**
+     *  Frame layout: Which is going to be used as parent layout for child activity layout.
+     *  This layout is protected so that child activity can access this
+     *  */
+    protected FrameLayout frameLayout;
+    /**
+     * Static variable for selected item position. Which can be used in child activity to know which item is selected from the list.
+     * */
+    protected static int position;
+    /**
+     * Navigation bar down in the app screen which is used to switch between home screen and history with favs
+     * */
     private BottomNavigationView navigation;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -52,9 +73,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.navigation_history:
                 fragmentClass = HistoryFragment.class;
                 break;
-            case R.id.navigation_notifications:
-                Toast.makeText(getApplication().getApplicationContext(), "Settings Checked",
-                        Toast.LENGTH_SHORT).show();
         }
 
         /**

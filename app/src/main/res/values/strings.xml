@@ -1,11 +1,6 @@
 <resources>
-    <!--to delete all template staff-->
     <string name="app_name">MyYandexTranslate</string>
     <string name="title_home">Home</string>
-    <string name="title_history">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="title_history">History</string>
     <string name="change_translate_direction">Revert translate direction</string>
-    <!--usefull data-->
-    <string name="history_template_data">Here we can find a lot of data \n Here we can find a lot of data \n Here we can find a lot of data</string>
-
 </resources>

@@ -16,7 +16,67 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:layout="@layout/activity_home"></FrameLayout>
+        tools:layout="@layout/activity_home">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <EditText
+                android:id="@+id/fromLangSelection"
+                android:layout_width="155dp"
+                android:layout_height="@dimen/up_action_bar"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="0dp"
+                android:ems="10"
+                android:focusable="false"
+                android:inputType="textPersonName"
+                android:text="Name"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/toLangSelection"
+                android:layout_width="162dp"
+                android:layout_height="@dimen/up_action_bar"
+                android:layout_marginRight="0dp"
+                android:ems="10"
+                android:focusable="false"
+                android:inputType="textPersonName"
+                android:text="Name"
+                app:layout_constraintBaseline_toBaselineOf="@+id/fromLangSelection"
+                app:layout_constraintRight_toRightOf="parent" />
+
+            <ImageView
+                android:layout_width="43dp"
+                android:layout_height="@dimen/up_action_bar"
+                android:layout_marginLeft="0dp"
+                android:layout_marginRight="0dp"
+                android:contentDescription="@string/change_translate_direction"
+                android:src="@drawable/ic_translate_dir"
+                app:layout_constraintLeft_toRightOf="@+id/fromLangSelection"
+                app:layout_constraintRight_toLeftOf="@+id/toLangSelection" />
+
+            <EditText
+                android:id="@+id/home_inputSourceText"
+                android:layout_width="match_parent"
+                android:layout_height="104dp"
+                android:background="@color/inputSourceText"
+                android:inputType="textAutoCorrect"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fromLangSelection" />
+
+            <TextView
+                android:id="@+id/home_outPutText"
+                android:layout_width="match_parent"
+                android:layout_height="458dp"
+                android:background="@color/outputTranslateText"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/home_inputSourceText" />
+        </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
@@ -28,7 +88,4 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/contentContainer"
         app:menu="@menu/navigation" />
-
-    <!-- android:background="?android:attr/windowBackground"  -->
-
 </android.support.constraint.ConstraintLayout>
