@@ -5,13 +5,15 @@
     android:orientation="vertical">
 
     <ListView
-        android:id="@+id/lang_selection_list"
+        android:id="@android:id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/lang_selection_item"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+
     </ListView>
+    <TextView
+        android:id="@android:id/empty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="List is Empty" />
 
 </LinearLayout>

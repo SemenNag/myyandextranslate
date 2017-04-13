@@ -1,4 +1,4 @@
-package edu.semnag.myyandextranslate.fragments.history;
+package edu.semnag.myyandextranslate.fragments;
 
 import android.database.Cursor;
 import android.os.Bundle;
@@ -51,13 +51,13 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
                 R.id.history_row_translate_direction,
                 R.id.history_row_fav};
 
-        simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.history_row,
+        simpleCursorAdapter = new SimpleCursorAdapter(getActivity(), R.layout.history_item,
                 null, fromColumns, toViews, 0);
         setListAdapter(simpleCursorAdapter);
 
         getLoaderManager().initLoader(0, getArguments(), this);
 
-        return (ViewGroup) inflater.inflate(R.layout.list_fragment_base, container, false);
+        return inflater.inflate(R.layout.fragment_history_list, container, false);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
                 PROJECTION,
                 selection,
                 null,
-                TranslatorContract.TranslateRegistry.COLUMNT_NAME_TIMESTAMP+" desc");
+                TranslatorContract.TranslateRegistry.COLUMNT_NAME_TIMESTAMP + " desc");
     }
 
     @Override

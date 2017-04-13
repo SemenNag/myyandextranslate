@@ -15,7 +15,7 @@
         android:layout_marginTop="0dp"
         android:text="Hello World"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toRightOf="@+id/imageView"
+        app:layout_constraintLeft_toRightOf="@+id/history_row_fav"
         app:layout_constraintRight_toLeftOf="@+id/history_row_translate_direction"
         app:layout_constraintTop_toTopOf="parent" />
 

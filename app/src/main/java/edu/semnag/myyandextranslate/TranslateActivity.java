@@ -1,15 +1,9 @@
 package edu.semnag.myyandextranslate;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.foxykeep.datadroid.requestmanager.Request;
@@ -29,33 +23,11 @@ import edu.semnag.myyandextranslate.request.operations.TranslateOperations;
  *         This activity contains FrameLaout which would be rebased according to nav option selected
  */
 
-public class MainActivity extends AppCompatActivity {
+public class TranslateActivity extends BaseActivity {
     /**
      * PrefsId which is used to store cross session user data
      */
     public static final String PREFS_NAME = "MyPrefsFile";
-    /**
-     * Frame layout: Which is going to be used as parent layout for child activity layout.
-     * This layout is protected so that child activity can access this
-     */
-    protected FrameLayout frameLayout;
-    /**
-     * Static variable for selected item position. Which can be used in child activity to know which item is selected from the list.
-     */
-    protected static int position;
-    /**
-     * Navigation bar down in the app screen which is used to switch between home screen and history with favs
-     */
-    private BottomNavigationView navigation;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            onNavClickedChangeActivity(item.getItemId());
-            return true;
-        }
-    };
 
     /**
      * Interface to interact with language selection fragment
@@ -88,25 +60,32 @@ public class MainActivity extends AppCompatActivity {
     private EditText sourceTextView;
     private TextView outPutTextView;
 
+    /**
+     * Keys for saving instance state
+     */
+    private static String KEY_LANG_FROM_SELECTED = "KeyLangFromSelected";
+    private static String KEY_LANG_TO_SELECTED = "KeyLangToSelected";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        getLayoutInflater().inflate(R.layout.activity_translate, frameLayout);
+
         /**
-         * setting route layout
+         * cause this activity extend from base activity
+         * BaseActivity.oncreate is called each time and reinit all fields,
+         * including bottonavview
+         * hence we need to manually set menu item checked
          * */
-        setContentView(R.layout.activity_main);
-        /**
-         * Configure navbar in bottom
-         * */
-        this.navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        this.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        navigation.getMenu().getItem(0).setChecked(true);
+
         /**
          * init requests management
          * */
         requestManager = TranslateRequestManager.from(this);
         translateRequestListiner = new TranslateRequestListener();
-
-        frameLayout = (FrameLayout) findViewById(R.id.contentContainer);
         /**
          * init widgets
          * */
@@ -133,20 +112,22 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        /**
+         * if activity rectreated we fill user values
+         * */
+        Bundle restoreState = getIntent().getExtras();
+        if (restoreState != null) {
+            fromLangSelectionView.setText(restoreState.getString(KEY_LANG_FROM_SELECTED));
+            toLangSelectionView.setText(restoreState.getString(KEY_LANG_TO_SELECTED));
+        }
     }
 
-
-    private void onNavClickedChangeActivity(int id) {
-        MainActivity.position = id;
-
-        switch (id) {
-            case R.id.navigation_home:
-                startActivity(new Intent(this, MainActivity.class));
-                break;
-            case R.id.navigation_history:
-                startActivity(new Intent(this, HistoryActivity.class));
-                break;
-        }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_LANG_FROM_SELECTED, fromLangSelectionView.getText().toString());
+        outState.putString(KEY_LANG_TO_SELECTED, toLangSelectionView.getText().toString());
+        super.onSaveInstanceState(outState);
     }
 
     private class TranslateRequestListener implements RequestManager.RequestListener {
@@ -207,9 +188,9 @@ public class MainActivity extends AppCompatActivity {
             requestManager.execute(request, translateRequestListiner);
         }
     }
+
     // FIXME: 13.04.2017 enlarge logic
     private boolean validateViewReadyToTranslate() {
-        return false;
+        return true;
     }
 }
-
