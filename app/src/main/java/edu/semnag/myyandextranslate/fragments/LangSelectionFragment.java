@@ -47,7 +47,7 @@ public class LangSelectionFragment extends ListFragment
         String[] fromColumns = {TranslatorContract.SupportLangs.COLUMN_LANG_DESC};
         int[] toViews = {R.id.lang_selection_item};
 
-        mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.lang_selection_item,
+        mAdapter = new SimpleCursorAdapter(getActivity(), R.layout.fragment_lang_selection_item,
                 null, fromColumns, toViews, 0);
         setListAdapter(mAdapter);
 

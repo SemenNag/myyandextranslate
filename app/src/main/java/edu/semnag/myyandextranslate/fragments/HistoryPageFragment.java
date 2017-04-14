@@ -1,5 +1,6 @@
 package edu.semnag.myyandextranslate.fragments;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,12 +8,14 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 import edu.semnag.myyandextranslate.R;
-import edu.semnag.myyandextranslate.fragments.adapters.HistoryListAdapter;
 import edu.semnag.myyandextranslate.provider.TranslatorContract;
 
 /**
@@ -38,7 +41,6 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
 
         String[] fromColumns = {
                 TranslatorContract.TranslateRegistry.COLUMN_NAME_SOURCE_TEXT,
@@ -85,6 +87,47 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         simpleCursorAdapter.swapCursor(null);
+    }
+
+    private class HistoryListAdapter extends SimpleCursorAdapter {
+
+        LayoutInflater layoutInflater;
+
+        public HistoryListAdapter(Context context, Cursor c, String[] from, int[] to, int flags) {
+            super(context, R.layout.fragment_history_item, c, from, to, flags);
+            this.layoutInflater = LayoutInflater.from(context);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup parent) {
+            return layoutInflater.inflate(R.layout.fragment_history_item, null);
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+            CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
+            TextView fromTextView = (TextView) view.findViewById(R.id.history_row_from);
+
+            int fromTextIndex=cursor.getColumnIndexOrThrow(TranslatorContract.TranslateRegistry.COLUMN_NAME_SOURCE_TEXT);
+
+            fromTextView.setText(cursor.getString(fromTextIndex));
+
+            fromTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    System.out.println("hello from text view");
+                }
+            });
+
+            checkBox.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    System.out.println("hello from check box");
+                }
+            });
+
+        }
+
     }
 
 }
