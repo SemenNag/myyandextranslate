@@ -10,7 +10,9 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.foxykeep.datadroid.requestmanager.Request;
 import com.foxykeep.datadroid.requestmanager.RequestManager;
@@ -38,7 +40,6 @@ public class LangSelectionFragment extends ListFragment
             TranslatorContract.SupportLangs.COLUMN_LANG_DESC
     };
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         /**
@@ -65,13 +66,37 @@ public class LangSelectionFragment extends ListFragment
          * firing new data request
          * */
         update();
-
         /**
          * saving self state cause orientation may be changed
          * */
         setRetainInstance(true);
 
-        return inflater.inflate(R.layout.fragment_lang_selection_list, container, false);
+        /**
+         * Organazing up bar with navigation to home and text
+         * */
+        View view = inflater.inflate(R.layout.fragment_lang_selection_list, container, false);
+
+        ImageView imageView = (ImageView) view.findViewById(R.id.lang_selection_up_bar_back);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goBack();
+            }
+        });
+
+        TextView textView = (TextView) view.findViewById(R.id.lang_selection_up_bar_text);
+        TranslateActivity.LangSelectionOnClickHandler handler = (TranslateActivity.LangSelectionOnClickHandler) getAsker();
+        switch (handler.getSourceId()) {
+            case R.id.fromLangSelection:
+                textView.setText(R.string.select_lang_from);
+                break;
+            case R.id.toLangSelection:
+                textView.setText(R.string.select_lang_to);
+                break;
+        }
+
+
+        return view;
     }
 
     /**
@@ -102,6 +127,11 @@ public class LangSelectionFragment extends ListFragment
         mAdapter.swapCursor(data);
     }
 
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mAdapter.swapCursor(null);
+    }
+
     /**
      * Method with asking RequestManager to
      * pull data from api
@@ -111,9 +141,8 @@ public class LangSelectionFragment extends ListFragment
         requestManager.execute(updateData, this);
     }
 
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mAdapter.swapCursor(null);
+    private void goBack() {
+        getFragmentManager().popBackStack();
     }
 
     @Override

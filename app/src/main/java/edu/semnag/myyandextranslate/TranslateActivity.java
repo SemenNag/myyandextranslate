@@ -104,18 +104,19 @@ public class TranslateActivity extends BaseActivity {
         outPutTextView = (TextView) frameLayout.findViewById(R.id.home_outPutText);
 
         /**
+         * assign listener to widgets
+         * */
+        LangSelectionOnClickHandler langSelectionOnClickHandler = new LangSelectionOnClickHandler();
+        fromLangSelectionView.setOnClickListener(langSelectionOnClickHandler);
+        toLangSelectionView.setOnClickListener(langSelectionOnClickHandler);
+
+        /**
          * checking whether lang selection fragment is already showing
          * */
         FragmentManager fm = getSupportFragmentManager();
         langSelectionFragment = (LangSelectionFragment) fm.findFragmentByTag("lang_selection_fragment");
         if (langSelectionFragment == null) {
-            /**
-             * assign listener to widgets
-             * */
             langSelectionFragment = new LangSelectionFragment();
-            LangSelectionOnClickHandler langSelectionOnClickHandler = new LangSelectionOnClickHandler();
-            fromLangSelectionView.setOnClickListener(langSelectionOnClickHandler);
-            toLangSelectionView.setOnClickListener(langSelectionOnClickHandler);
         } else {
             LangSelectionOnClickHandler handler = (LangSelectionOnClickHandler) langSelectionFragment.getAsker();
             switch (handler.getSourceId()) {
@@ -200,7 +201,7 @@ public class TranslateActivity extends BaseActivity {
         }
     }
 
-    private class LangSelectionOnClickHandler implements View.OnClickListener,
+    public class LangSelectionOnClickHandler implements View.OnClickListener,
             ListFragmentItemClickListener {
         private EditText sourceView;
         private int sourceId;
@@ -228,8 +229,10 @@ public class TranslateActivity extends BaseActivity {
 
     private void askForLangSelection(ListFragmentItemClickListener asker) {
         langSelectionFragment.setItemClickListener(asker);
-        getSupportFragmentManager().beginTransaction().add(R.id.contentContainer,
-                langSelectionFragment, "lang_selection_fragment").commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.contentContainer,
+                        langSelectionFragment, "lang_selection_fragment")
+                .addToBackStack(null).commit();
     }
 
     private void makeRequestToTranslate(String source) {

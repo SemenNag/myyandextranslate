@@ -8,7 +8,7 @@
     <EditText
         android:id="@+id/fromLangSelection"
         android:layout_width="155dp"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/up_action_bar"
         android:background="@color/primary"
         android:focusable="false"
         android:inputType="textPersonName"
@@ -20,7 +20,7 @@
     <EditText
         android:id="@+id/toLangSelection"
         android:layout_width="155dp"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/up_action_bar"
         android:background="@color/primary"
         android:focusable="false"
         android:inputType="textPersonName"
@@ -31,7 +31,7 @@
     <ImageView
         android:id="@+id/changeTranslateDirection"
         android:layout_width="75dp"
-        android:layout_height="50dp"
+        android:layout_height="@dimen/up_action_bar"
         android:layout_marginTop="0dp"
         android:background="@color/primary"
         android:contentDescription="@string/change_translate_direction"
