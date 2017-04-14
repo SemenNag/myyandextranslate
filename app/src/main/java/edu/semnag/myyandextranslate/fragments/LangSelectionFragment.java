@@ -66,6 +66,11 @@ public class LangSelectionFragment extends ListFragment
          * */
         update();
 
+        /**
+         * saving self state cause orientation may be changed
+         * */
+        setRetainInstance(true);
+
         return inflater.inflate(R.layout.fragment_lang_selection_list, container, false);
     }
 
@@ -77,6 +82,10 @@ public class LangSelectionFragment extends ListFragment
      */
     public void setItemClickListener(TranslateActivity.ListFragmentItemClickListener asker) {
         this.asker = asker;
+    }
+
+    public TranslateActivity.ListFragmentItemClickListener getAsker() {
+        return asker;
     }
 
     @Override

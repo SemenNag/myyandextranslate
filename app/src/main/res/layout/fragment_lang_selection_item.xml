@@ -6,7 +6,10 @@
 
     <TextView
         android:id="@+id/lang_selection_item"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/icons"
+        android:drawableBottom="@color/divider"
+        android:textColor="@color/primary_text" />
 
 </LinearLayout>

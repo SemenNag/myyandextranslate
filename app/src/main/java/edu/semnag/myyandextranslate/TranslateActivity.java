@@ -1,6 +1,7 @@
 package edu.semnag.myyandextranslate;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -69,6 +70,11 @@ public class TranslateActivity extends BaseActivity {
     public static String KEY_SOURCE_TEXT = "KeySourceText";
     public static String KEY_OUTPUT_TEXT = "KeyOutPutText";
 
+    /**
+     * active fragment with language selection
+     * on the screen
+     */
+    private LangSelectionFragment langSelectionFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,11 +102,32 @@ public class TranslateActivity extends BaseActivity {
         toLangSelectionView = (EditText) frameLayout.findViewById(R.id.toLangSelection);
         sourceTextView = (EditText) frameLayout.findViewById(R.id.home_inputSourceText);
         outPutTextView = (TextView) frameLayout.findViewById(R.id.home_outPutText);
+
         /**
-         * assign listeners to widgets
+         * checking whether lang selection fragment is already showing
          * */
-        fromLangSelectionView.setOnClickListener(new LangSelectionOnClickHandler());
-        toLangSelectionView.setOnClickListener(new LangSelectionOnClickHandler());
+        FragmentManager fm = getSupportFragmentManager();
+        langSelectionFragment = (LangSelectionFragment) fm.findFragmentByTag("lang_selection_fragment");
+        if (langSelectionFragment == null) {
+            /**
+             * assign listener to widgets
+             * */
+            langSelectionFragment = new LangSelectionFragment();
+            LangSelectionOnClickHandler langSelectionOnClickHandler = new LangSelectionOnClickHandler();
+            fromLangSelectionView.setOnClickListener(langSelectionOnClickHandler);
+            toLangSelectionView.setOnClickListener(langSelectionOnClickHandler);
+        } else {
+            LangSelectionOnClickHandler handler = (LangSelectionOnClickHandler) langSelectionFragment.getAsker();
+            switch (handler.getSourceId()) {
+                case R.id.fromLangSelection:
+                    handler.setSourceView(fromLangSelectionView);
+                    break;
+                case R.id.toLangSelection:
+                    handler.setSourceView(toLangSelectionView);
+                    break;
+            }
+        }
+
         /**
          * creating icon for changing translate direction
          * */
@@ -138,6 +165,10 @@ public class TranslateActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -177,10 +208,12 @@ public class TranslateActivity extends BaseActivity {
     private class LangSelectionOnClickHandler implements View.OnClickListener,
             ListFragmentItemClickListener {
         private EditText sourceView;
+        private int sourceId;
 
         @Override
         public void onClick(View v) {
             sourceView = (EditText) v;
+            sourceId = v.getId();
             askForLangSelection(this);
         }
 
@@ -188,13 +221,20 @@ public class TranslateActivity extends BaseActivity {
         public void onListFragmentItemClicked(Map<String, String> values) {
             sourceView.setText(values.get(ListFragmentItemClickListener.LANG_SELECTION));
         }
+
+        public void setSourceView(EditText sourceView) {
+            this.sourceView = sourceView;
+        }
+
+        public int getSourceId() {
+            return sourceId;
+        }
     }
 
     private void askForLangSelection(ListFragmentItemClickListener asker) {
-        LangSelectionFragment langSelectionFragment = new LangSelectionFragment();
         langSelectionFragment.setItemClickListener(asker);
         getSupportFragmentManager().beginTransaction().add(R.id.contentContainer,
-                langSelectionFragment).commit();
+                langSelectionFragment, "lang_selection_fragment").commit();
     }
 
     private void makeRequestToTranslate(String source) {

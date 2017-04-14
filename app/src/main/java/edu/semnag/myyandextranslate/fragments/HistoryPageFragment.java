@@ -125,11 +125,22 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
             TextView fromTextView = (TextView) view.findViewById(R.id.history_row_from);
             int fromTextIndex = cursor.getColumnIndexOrThrow(TranslatorContract.TranslateRegistry.COLUMN_NAME_SOURCE_TEXT);
             fromTextView.setText(cursor.getString(fromTextIndex));
+
+            TextView toTextView = (TextView) view.findViewById(R.id.history_row_to);
+            int toTextIndex = cursor.getColumnIndexOrThrow(TranslatorContract.TranslateRegistry.COLUMN_NAME_OUTPUT_TEXT);
+            toTextView.setText(cursor.getString(toTextIndex));
+
+            TextView langDireactionView = (TextView) view.findViewById(R.id.history_row_translate_direction);
+            int langDireactionIndex = cursor.getColumnIndexOrThrow(TranslatorContract.TranslateRegistry.COLUMN_NAME_TRANSLATE_DIR);
+            langDireactionView.setText(cursor.getString(langDireactionIndex));
+
             /**
              * configuring click handler that is used to start translate activity
              * */
             HistoryRowWithTranslateClickHandler clickHandler = new HistoryRowWithTranslateClickHandler();
             fromTextView.setOnClickListener(clickHandler);
+            toTextView.setOnClickListener(clickHandler);
+            langDireactionView.setOnClickListener(clickHandler);
             /**
              * Configuring star responsible to show whether the list item is favourite
              * */
