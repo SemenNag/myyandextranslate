@@ -28,11 +28,13 @@ public class TranslatorContract {
     public static class TranslateRegistry implements BaseColumns {
         public static final String CONTENT_PATH = "translate_registry";
         public static final Uri CONTENT_URI = Uri.withAppendedPath(AUTHORITY_URI, CONTENT_PATH);
-        public static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd." + AUTHORITY + "." + CONTENT_PATH;
+        public static final String CONTENT_TYPE = "vnd.android.cursor.item/vnd." + AUTHORITY + "." + CONTENT_PATH;
         public static final String TABLE_NAME = "translate_reqistry";
         public static final String COLUMN_NAME_SOURCE_TEXT = "source_text";
         public static final String COLUMN_NAME_TRANSLATE_DIR = "translate_direction";
         public static final String COLUMN_NAME_OUTPUT_TEXT = "output_text";
+        public static final String COLUMN_NAME_LANG_FROM_DESC = "lang_from_desc";
+        public static final String COLUMN_NAME_LANG_TO_DESC = "lang_to_desc";
         public static final String COLUMN_NAME_IS_FAV = "is_favorite";
         public static final String COLUMNT_NAME_TIMESTAMP = "timestamp";
 

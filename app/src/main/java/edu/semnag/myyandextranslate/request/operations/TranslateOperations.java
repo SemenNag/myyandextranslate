@@ -91,6 +91,10 @@ public final class TranslateOperations implements Operation {
                             response.get("text").toString());
                     contentValues.put(TranslatorContract.TranslateRegistry.COLUMN_NAME_TRANSLATE_DIR,
                             response.get("lang").toString());
+                    contentValues.put(TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_FROM_DESC,
+                            langFromDesc);
+                    contentValues.put(TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_TO_DESC,
+                            langToDesc);
                     contentValues.put(TranslatorContract.TranslateRegistry.COLUMN_NAME_IS_FAV,
                             0);
                     contentValues.put(TranslatorContract.TranslateRegistry.COLUMNT_NAME_TIMESTAMP,

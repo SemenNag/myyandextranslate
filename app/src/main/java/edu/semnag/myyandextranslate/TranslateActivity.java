@@ -64,8 +64,10 @@ public class TranslateActivity extends BaseActivity {
     /**
      * Keys for saving instance state
      */
-    private static String KEY_LANG_FROM_SELECTED = "KeyLangFromSelected";
-    private static String KEY_LANG_TO_SELECTED = "KeyLangToSelected";
+    public static String KEY_LANG_FROM_SELECTED = "KeyLangFromSelected";
+    public static String KEY_LANG_TO_SELECTED = "KeyLangToSelected";
+    public static String KEY_SOURCE_TEXT = "KeySourceText";
+    public static String KEY_OUTPUT_TEXT = "KeyOutPutText";
 
 
     @Override
@@ -124,12 +126,15 @@ public class TranslateActivity extends BaseActivity {
         });
 
         /**
-         * if activity rectreated we fill user values
+         * if activity called from another with provided data
+         * or we have user last entered data
          * */
         Bundle restoreState = getIntent().getExtras();
         if (restoreState != null) {
             fromLangSelectionView.setText(restoreState.getString(KEY_LANG_FROM_SELECTED));
             toLangSelectionView.setText(restoreState.getString(KEY_LANG_TO_SELECTED));
+            sourceTextView.setText(restoreState.getString(KEY_SOURCE_TEXT));
+            outPutTextView.setText(restoreState.getString(KEY_OUTPUT_TEXT));
         }
     }
 
@@ -138,6 +143,8 @@ public class TranslateActivity extends BaseActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_LANG_FROM_SELECTED, fromLangSelectionView.getText().toString());
         outState.putString(KEY_LANG_TO_SELECTED, toLangSelectionView.getText().toString());
+        outState.putString(KEY_SOURCE_TEXT, sourceTextView.getText().toString());
+        outState.putString(KEY_OUTPUT_TEXT, outPutTextView.getText().toString());
         super.onSaveInstanceState(outState);
     }
 

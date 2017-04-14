@@ -19,7 +19,7 @@ import android.support.annotation.Nullable;
 public class LocalContentProvider extends ContentProvider {
 
     private static final String DB_NAME = "myyandextranslator.db";
-    private static final int DB_VERSION = 4;
+    private static final int DB_VERSION = 6;
 
     private DataBaseHelper mDataBaseHelper;
 
@@ -53,6 +53,8 @@ public class LocalContentProvider extends ContentProvider {
                         TranslatorContract.TranslateRegistry.COLUMN_NAME_SOURCE_TEXT + TEXT_TYPE + COMMA_SEP +
                         TranslatorContract.TranslateRegistry.COLUMN_NAME_TRANSLATE_DIR + TEXT_TYPE + COMMA_SEP +
                         TranslatorContract.TranslateRegistry.COLUMN_NAME_OUTPUT_TEXT + TEXT_TYPE + COMMA_SEP +
+                        TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_FROM_DESC + TEXT_TYPE + COMMA_SEP +
+                        TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_TO_DESC + TEXT_TYPE + COMMA_SEP +
                         TranslatorContract.TranslateRegistry.COLUMNT_NAME_TIMESTAMP + INT_TYPE + COMMA_SEP +
                         TranslatorContract.TranslateRegistry.COLUMN_NAME_IS_FAV + INT_TYPE +
                         " )";
