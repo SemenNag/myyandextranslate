@@ -166,11 +166,6 @@ public class TranslateActivity extends BaseActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_LANG_FROM_SELECTED, fromLangSelectionView.getText().toString());
         outState.putString(KEY_LANG_TO_SELECTED, toLangSelectionView.getText().toString());
