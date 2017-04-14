@@ -83,12 +83,16 @@ public final class TranslateOperations implements Operation {
             switch (responseCode) {
                 case "200":
 
-                    ContentValues contentValues = new ContentValues();
+                    String translatedText = response.get("text").toString();
+                    int start = translatedText.indexOf("[\"");
+                    int end = translatedText.indexOf("\"]");
+                    String formatedText = translatedText.substring(start + 2, end);
 
+                    ContentValues contentValues = new ContentValues();
                     contentValues.put(TranslatorContract.TranslateRegistry.COLUMN_NAME_SOURCE_TEXT,
                             request.getString(TranslateParams.SOURCE_TEXT));
                     contentValues.put(TranslatorContract.TranslateRegistry.COLUMN_NAME_OUTPUT_TEXT,
-                            response.get("text").toString());
+                            formatedText);
                     contentValues.put(TranslatorContract.TranslateRegistry.COLUMN_NAME_TRANSLATE_DIR,
                             response.get("lang").toString());
                     contentValues.put(TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_FROM_DESC,
@@ -107,7 +111,7 @@ public final class TranslateOperations implements Operation {
                      * sending data to client
                      * */
                     Bundle bundle = new Bundle();
-                    bundle.putString(TranslateParams.OUTPUT_TEXT, response.get("text").toString());
+                    bundle.putString(TranslateParams.OUTPUT_TEXT, formatedText);
                     return bundle;
                 case "401":
                 case "402":
