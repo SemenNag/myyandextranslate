@@ -2,7 +2,9 @@ package edu.semnag.myyandextranslate.request.operations;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.foxykeep.datadroid.exception.ConnectionException;
 import com.foxykeep.datadroid.exception.CustomRequestException;
@@ -14,12 +16,12 @@ import com.foxykeep.datadroid.service.RequestService.Operation;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
-import edu.semnag.myyandextranslate.provider.TranslatorContract;
+import static edu.semnag.myyandextranslate.provider.TranslatorContract.SupportLangs.COLUMN_LANG_CODE;
+import static edu.semnag.myyandextranslate.provider.TranslatorContract.SupportLangs.COLUMN_LANG_DESC;
+import static edu.semnag.myyandextranslate.provider.TranslatorContract.SupportLangs.CONTENT_URI;
 
 /**
  * Created by semna on 03.04.2017.
@@ -32,49 +34,69 @@ public final class SupportLangsOperations implements Operation {
     @Override
     public Bundle execute(Context context, Request request)
             throws ConnectionException, DataException, CustomRequestException {
+
         NetworkConnection connection = new NetworkConnection(context, PATH);
         HashMap<String, String> params = new HashMap<>();
         params.put("key", ApiKey.API_KEY);
         params.put("ui", UILANG);
         connection.setParameters(params);
         NetworkConnection.ConnectionResult result = connection.execute();
-
-        /**
-         * After receiving response
-         * we need to adopt it to our model
-         * */
-        List<ContentValues> supportLangsValues;
         try {
-            /**
-             * parsing the response
-             * */
-            JSONObject response = new JSONObject(result.body);
-            /**
-             * Extracting dictionery with
-             * lang code - description
-             * */
-            JSONObject langDictionary = response.getJSONObject("langs");
-            /**
-             * iterating via response result
-             * */
-            Iterator iterator = langDictionary.keys();
-            supportLangsValues = new ArrayList<>();
-
-            while (iterator.hasNext()) {
-                ContentValues item = new ContentValues();
-                String key = (String) iterator.next();
-                item.put(TranslatorContract.SupportLangs.COLUMN_LANG_CODE, key);
-                item.put(TranslatorContract.SupportLangs.COLUMN_LANG_DESC, langDictionary.getString(key));
-                supportLangsValues.add(item);
+            ContentValues parsedNetworkResponse = networkResponse2ContentValuesExtractor(result);
+            if (parsedNetworkResponse.size() == 0) {
+                throw new DataException(Log.ERROR + " server response is empty");
             }
-        } catch (JSONException e) {
-            throw new DataException(e.getMessage());
+
+            String[] networkLangCodes = parsedNetworkResponse.keySet().toArray(new String[parsedNetworkResponse.keySet().size()]);
+            /**
+             * delete all lang codes that not avaialable in api
+             * */
+            context.getContentResolver().delete(CONTENT_URI, COLUMN_LANG_CODE + " NOT IN (?)", networkLangCodes);
+            /**
+             * cleaning network data only with new values
+             * */
+            Cursor localData = context.getContentResolver().query(CONTENT_URI, new String[]{COLUMN_LANG_CODE, COLUMN_LANG_DESC}, null, null, null);
+            if (localData.moveToFirst()) {
+                do {
+                    String langCode = localData.getString(localData.getColumnIndex(COLUMN_LANG_CODE));
+                    if (parsedNetworkResponse.containsKey(langCode)) {
+                        parsedNetworkResponse.remove(langCode);
+                    }
+                } while (localData.moveToNext());
+            }
+            localData.close();
+            /**
+             * inserting left data to store
+             * */
+            context.getContentResolver().insert(CONTENT_URI, parsedNetworkResponse);
+
+        } catch (JSONException jsException) {
+            throw new DataException(Log.ERROR + " error handling server response");
         }
 
-        context.getContentResolver().delete(TranslatorContract.SupportLangs.CONTENT_URI, null, null);
-        context.getContentResolver().bulkInsert(TranslatorContract.SupportLangs.CONTENT_URI,
-                supportLangsValues.toArray(new ContentValues[supportLangsValues.size()]));
-
         return null;
+    }
+
+    private ContentValues networkResponse2ContentValuesExtractor(NetworkConnection.ConnectionResult connectionResult) throws JSONException {
+        /**
+         * parsing the response
+         * */
+        JSONObject response = new JSONObject(connectionResult.body);
+        /**
+         * Extracting dictionery with
+         * lang code - description
+         * */
+        JSONObject langDictionary = response.getJSONObject("langs");
+        /**
+         * iterating via response result
+         * */
+        Iterator iterator = langDictionary.keys();
+        ContentValues dataFromNet = new ContentValues();
+        while (iterator.hasNext()) {
+            String key = (String) iterator.next();
+            dataFromNet.put(COLUMN_LANG_CODE, key);
+            dataFromNet.put(COLUMN_LANG_DESC, langDictionary.getString(key));
+        }
+        return dataFromNet;
     }
 }

@@ -1,5 +1,6 @@
 package edu.semnag.myyandextranslate.fragments;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -119,7 +120,7 @@ public class LangSelectionFragment extends ListFragment
          * registering the cursor loader
          * */
         return new CursorLoader(getActivity(), TranslatorContract.SupportLangs.CONTENT_URI,
-                PROJECTION, null, null, null);
+                PROJECTION, null, null, TranslatorContract.SupportLangs.COLUMNT_NAME_TIMESTAMP + " desc");
     }
 
     @Override
@@ -154,6 +155,17 @@ public class LangSelectionFragment extends ListFragment
         mail.put(TranslateActivity.ListFragmentItemClickListener.LANG_SELECTION, selectedLang);
 
         asker.onListFragmentItemClicked(mail);
+
+        /**
+         * updating last selection time
+         * */
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TranslatorContract.SupportLangs.COLUMNT_NAME_TIMESTAMP, System.currentTimeMillis());
+        getContext().getContentResolver().update(TranslatorContract.SupportLangs.CONTENT_URI,
+                contentValues,
+                TranslatorContract.SupportLangs.COLUMN_LANG_DESC + "=?",
+                new String[]{selectedLang});
+
         getFragmentManager().beginTransaction().remove(this).commit();
     }
 

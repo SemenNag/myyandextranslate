@@ -22,6 +22,7 @@ public class TranslatorContract {
         public static final String TABLE_NAME = "support_langs";
         public static final String COLUMN_LANG_CODE = "lang_code";
         public static final String COLUMN_LANG_DESC = "lang_descr";
+        public static final String COLUMNT_NAME_TIMESTAMP = "timestamp";
 
     }
 
