@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
@@ -18,7 +19,7 @@ import android.support.annotation.Nullable;
 public class LocalContentProvider extends ContentProvider {
 
     private static final String DB_NAME = "myyandextranslator.db";
-    private static final int DB_VERSION = 7;
+    private static final int DB_VERSION = 9;
 
     private DataBaseHelper mDataBaseHelper;
 
@@ -41,7 +42,7 @@ public class LocalContentProvider extends ContentProvider {
                 "CREATE TABLE " + TranslatorContract.SupportLangs.TABLE_NAME + " (" +
                         TranslatorContract.SupportLangs._ID + " INTEGER PRIMARY KEY," +
                         TranslatorContract.SupportLangs.COLUMN_LANG_CODE + TEXT_TYPE + COMMA_SEP +
-                        TranslatorContract.SupportLangs.COLUMN_LANG_DESC + TEXT_TYPE +
+                        TranslatorContract.SupportLangs.COLUMN_LANG_DESC + TEXT_TYPE + COMMA_SEP +
                         TranslatorContract.SupportLangs.COLUMNT_NAME_TIMESTAMP + INT_TYPE +
                         " )";
 
@@ -126,6 +127,34 @@ public class LocalContentProvider extends ContentProvider {
         mDataBaseHelper.getWritableDatabase().insert(tableName, null, values);
         getContext().getContentResolver().notifyChange(uri, null);
         return uri;
+    }
+
+    public int bulkInsert(Uri uri, ContentValues[] values) {
+        int numInserted = 0;
+
+        String table = getTableName(uri);
+
+        if (table == null) {
+            return 0;
+        }
+
+        SQLiteDatabase sqlDB = mDataBaseHelper.getWritableDatabase();
+        sqlDB.beginTransaction();
+        try {
+            for (ContentValues cv : values) {
+                long newID = sqlDB.insertOrThrow(table, null, cv);
+                if (newID <= 0) {
+                    throw new SQLException("Failed to insert row into " + uri);
+                }
+            }
+            sqlDB.setTransactionSuccessful();
+
+            getContext().getContentResolver().notifyChange(uri, null);
+            numInserted = values.length;
+        } finally {
+            sqlDB.endTransaction();
+        }
+        return numInserted;
     }
 
     @Override

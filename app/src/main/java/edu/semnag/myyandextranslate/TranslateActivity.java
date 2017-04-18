@@ -1,5 +1,8 @@
 package edu.semnag.myyandextranslate;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.view.KeyEvent;
@@ -7,6 +10,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.foxykeep.datadroid.requestmanager.Request;
 import com.foxykeep.datadroid.requestmanager.RequestManager;
@@ -26,11 +30,6 @@ import edu.semnag.myyandextranslate.request.operations.TranslateOperations;
  */
 
 public class TranslateActivity extends BaseActivity {
-    /**
-     * PrefsId which is used to store cross session user data
-     */
-    public static final String PREFS_NAME = "MyPrefsFile";
-
     /**
      * Interface to interact with language selection fragment
      */
@@ -164,6 +163,12 @@ public class TranslateActivity extends BaseActivity {
             sourceTextView.setText(restoreState.getString(KEY_SOURCE_TEXT));
             outPutTextView.setText(restoreState.getString(KEY_OUTPUT_TEXT));
         }
+        /**
+         * check if inet is available
+         * */
+        if (!isOnline()) {
+            notifyUsersWithProblem("Please check internet connection");
+        }
     }
 
     @Override
@@ -175,30 +180,49 @@ public class TranslateActivity extends BaseActivity {
         super.onSaveInstanceState(outState);
     }
 
+    private boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+        return networkInfo != null && networkInfo.isConnectedOrConnecting();
+    }
+
+    private void notifyUsersWithProblem(String problem) {
+        Toast.makeText(this, problem, Toast.LENGTH_SHORT).show();
+    }
+
     private class TranslateRequestListener implements RequestManager.RequestListener {
+        private String error_message = "Problems with getting the translation";
 
         @Override
         public void onRequestFinished(Request request, Bundle resultData) {
             /**
-             * setting text to view
+             * 1. Checking the result in case its null or blank
+             * */
+            if (resultData == null || resultData.isEmpty()) {
+                notifyUsersWithProblem(error_message);
+                return;
+            }
+            /**
+             * 2. setting response text to view
              * */
             outPutTextView.setText(resultData.getString(TranslateOperations.TranslateParams.OUTPUT_TEXT));
         }
 
         @Override
         public void onRequestConnectionError(Request request, int statusCode) {
-
+            notifyUsersWithProblem(error_message);
         }
 
         @Override
         public void onRequestDataError(Request request) {
-
+            notifyUsersWithProblem(error_message);
         }
 
         @Override
         public void onRequestCustomError(Request request, Bundle resultData) {
-
+            notifyUsersWithProblem(error_message);
         }
+
     }
 
     public class LangSelectionOnClickHandler implements View.OnClickListener,
@@ -228,6 +252,12 @@ public class TranslateActivity extends BaseActivity {
     }
 
     private void askForLangSelection(ListFragmentItemClickListener asker) {
+
+        if (!isOnline()) {
+            notifyUsersWithProblem("Please check internet connection");
+            return;
+
+        }
         langSelectionFragment.setItemClickListener(asker);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.contentContainer,
@@ -245,9 +275,33 @@ public class TranslateActivity extends BaseActivity {
         }
     }
 
-    // FIXME: 13.04.2017 enlarge logic
+    /**
+     * method which checks values in fields
+     */
     private boolean validateViewReadyToTranslate() {
-        return true;
+        boolean ok = true;
+        /**
+         * 1. Checking lang from
+         * */
+        if (fromLangSelectionView.getText().toString().equals("")) {
+            fromLangSelectionView.setError("Please select languange to translate from");
+            ok = false;
+        }
+        /**
+         * 2. Checking lang to
+         * */
+        if (toLangSelectionView.getText().toString().equals("")) {
+            toLangSelectionView.setError("Please select languange to translate");
+            ok = false;
+        }
+        /**
+         * 3. Checking input text for translating
+         * */
+        if (sourceTextView.getText().toString().equals("")) {
+            sourceTextView.setError("Please fill text to translate");
+            ok = false;
+        }
+        return ok;
     }
 
 

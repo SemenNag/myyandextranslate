@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.foxykeep.datadroid.exception.ConnectionException;
 import com.foxykeep.datadroid.exception.CustomRequestException;
@@ -16,8 +15,14 @@ import com.foxykeep.datadroid.service.RequestService.Operation;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+
+import edu.semnag.myyandextranslate.provider.TranslatorContract;
 
 import static edu.semnag.myyandextranslate.provider.TranslatorContract.SupportLangs.COLUMN_LANG_CODE;
 import static edu.semnag.myyandextranslate.provider.TranslatorContract.SupportLangs.COLUMN_LANG_DESC;
@@ -42,42 +47,44 @@ public final class SupportLangsOperations implements Operation {
         connection.setParameters(params);
         NetworkConnection.ConnectionResult result = connection.execute();
         try {
-            ContentValues parsedNetworkResponse = networkResponse2ContentValuesExtractor(result);
+            List<ContentValues> parsedNetworkResponse = networkResponse2ContentValuesExtractor(result);
             if (parsedNetworkResponse.size() == 0) {
-                throw new DataException(Log.ERROR + " server response is empty");
+                throw new DataException("server response is empty");
             }
-
-            String[] networkLangCodes = parsedNetworkResponse.keySet().toArray(new String[parsedNetworkResponse.keySet().size()]);
-            /**
-             * delete all lang codes that not avaialable in api
-             * */
-            context.getContentResolver().delete(CONTENT_URI, COLUMN_LANG_CODE + " NOT IN (?)", networkLangCodes);
-            /**
-             * cleaning network data only with new values
-             * */
+            List<ContentValues> localCopyOfData = new ArrayList<>();
             Cursor localData = context.getContentResolver().query(CONTENT_URI, new String[]{COLUMN_LANG_CODE, COLUMN_LANG_DESC}, null, null, null);
             if (localData.moveToFirst()) {
                 do {
-                    String langCode = localData.getString(localData.getColumnIndex(COLUMN_LANG_CODE));
-                    if (parsedNetworkResponse.containsKey(langCode)) {
-                        parsedNetworkResponse.remove(langCode);
-                    }
+                    String langCodeFromDB = localData.getString(localData.getColumnIndex(COLUMN_LANG_CODE));
+                    String langDescFromDB = localData.getString(localData.getColumnIndex(COLUMN_LANG_DESC));
+                    ContentValues item = new ContentValues();
+                    item.put(TranslatorContract.SupportLangs.COLUMN_LANG_CODE, langCodeFromDB);
+                    item.put(TranslatorContract.SupportLangs.COLUMN_LANG_DESC, langDescFromDB);
+
+                    localCopyOfData.add(item);
                 } while (localData.moveToNext());
             }
-            localData.close();
-            /**
-             * inserting left data to store
-             * */
-            context.getContentResolver().insert(CONTENT_URI, parsedNetworkResponse);
 
-        } catch (JSONException jsException) {
-            throw new DataException(Log.ERROR + " error handling server response");
+            Collection<ContentValues> toDelete = new HashSet<>(localCopyOfData);
+            toDelete.removeAll(parsedNetworkResponse);
+            String[] toDeleteSelection = new String[toDelete.size()];
+            int i = 0;
+            for (ContentValues item : toDelete) {
+                toDeleteSelection[i] = item.getAsString(TranslatorContract.SupportLangs.COLUMN_LANG_CODE);
+            }
+            context.getContentResolver().delete(CONTENT_URI, TranslatorContract.SupportLangs.COLUMN_LANG_CODE + "=?", toDeleteSelection);
+
+            Collection<ContentValues> toInsert = new HashSet<>(parsedNetworkResponse);
+            toInsert.removeAll(localCopyOfData);
+            context.getContentResolver().bulkInsert(CONTENT_URI, toInsert.toArray(new ContentValues[toInsert.size()]));
+
+        } catch (Exception ex) {
+            System.out.println("ess");
         }
-
         return null;
     }
 
-    private ContentValues networkResponse2ContentValuesExtractor(NetworkConnection.ConnectionResult connectionResult) throws JSONException {
+    private List<ContentValues> networkResponse2ContentValuesExtractor(NetworkConnection.ConnectionResult connectionResult) throws JSONException {
         /**
          * parsing the response
          * */
@@ -88,14 +95,19 @@ public final class SupportLangsOperations implements Operation {
          * */
         JSONObject langDictionary = response.getJSONObject("langs");
         /**
+         * prepare result set of content values
+         * */
+        List<ContentValues> dataFromNet = new ArrayList<>();
+        /**
          * iterating via response result
          * */
         Iterator iterator = langDictionary.keys();
-        ContentValues dataFromNet = new ContentValues();
         while (iterator.hasNext()) {
             String key = (String) iterator.next();
-            dataFromNet.put(COLUMN_LANG_CODE, key);
-            dataFromNet.put(COLUMN_LANG_DESC, langDictionary.getString(key));
+            ContentValues item = new ContentValues();
+            item.put(COLUMN_LANG_CODE, key);
+            item.put(COLUMN_LANG_DESC, langDictionary.getString(key));
+            dataFromNet.add(item);
         }
         return dataFromNet;
     }
