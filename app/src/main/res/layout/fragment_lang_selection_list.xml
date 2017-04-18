@@ -43,6 +43,6 @@
         android:background="@color/icons"
         android:text="List is Empty"
         android:textColor="@color/secondary_text"
-        android:textSize="14pt" />
+        android:textSize="24sp" />
 
 </LinearLayout>

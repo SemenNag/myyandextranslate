@@ -154,8 +154,8 @@ public final class TranslateOperations implements Operation {
         String langFromDesc = request.getString(TranslateParams.FROM_LANG);
         String langToDesc = request.getString(TranslateParams.TO_LANG);
         String sourceText = request.getString(TranslateParams.SOURCE_TEXT);
-        String selection = TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_FROM_DESC + "='" + langFromDesc + "' and" +
-                TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_TO_DESC + "='" + langToDesc + "' and" +
+        String selection = TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_FROM_DESC + "='" + langFromDesc + "' and " +
+                TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_TO_DESC + "='" + langToDesc + "' and " +
                 TranslatorContract.TranslateRegistry.COLUMN_NAME_SOURCE_TEXT + "='" + sourceText + "'";
         /**
          * 2. Make query to local db
