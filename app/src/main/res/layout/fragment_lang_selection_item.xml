@@ -10,6 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@color/icons"
         android:drawableBottom="@color/divider"
-        android:textColor="@color/primary_text" />
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/font_size_medium" />
 
 </LinearLayout>

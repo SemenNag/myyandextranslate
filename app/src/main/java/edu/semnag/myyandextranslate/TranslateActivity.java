@@ -258,6 +258,9 @@ public class TranslateActivity extends BaseActivity {
             return;
 
         }
+
+        clearAllEditTextErrors();
+
         langSelectionFragment.setItemClickListener(asker);
         getSupportFragmentManager().beginTransaction()
                 .add(R.id.contentContainer,
@@ -281,26 +284,37 @@ public class TranslateActivity extends BaseActivity {
     private boolean validateViewReadyToTranslate() {
         boolean ok = true;
         /**
-         * 1. Checking lang from
+         * 1. Checking input text for translating
          * */
-        if (fromLangSelectionView.getText().toString().equals("")) {
-            fromLangSelectionView.setError("Please select languange to translate from");
+        if (sourceTextView.getText().toString().equals("")) {
+            sourceTextView.setFocusable(true);
+            sourceTextView.setError("Please fill text to translate");
+            sourceTextView.requestFocus();
             ok = false;
         }
+
         /**
          * 2. Checking lang to
          * */
         if (toLangSelectionView.getText().toString().equals("")) {
+            toLangSelectionView.setFocusable(true);
             toLangSelectionView.setError("Please select languange to translate");
+            toLangSelectionView.requestFocus();
             ok = false;
         }
+
+
         /**
-         * 3. Checking input text for translating
+         * 3. Checking lang from
          * */
-        if (sourceTextView.getText().toString().equals("")) {
-            sourceTextView.setError("Please fill text to translate");
+        if (fromLangSelectionView.getText().toString().equals("")) {
+            fromLangSelectionView.setFocusable(true);
+            fromLangSelectionView.setError("Please select languange to translate from");
+            fromLangSelectionView.requestFocus();
             ok = false;
         }
+
+
         return ok;
     }
 
@@ -310,5 +324,11 @@ public class TranslateActivity extends BaseActivity {
         String to = toLangSelectionView.getText().toString();
         fromLangSelectionView.setText(to);
         toLangSelectionView.setText(from);
+    }
+
+    private void clearAllEditTextErrors() {
+        fromLangSelectionView.setError(null);
+        toLangSelectionView.setError(null);
+        sourceTextView.setError(null);
     }
 }
