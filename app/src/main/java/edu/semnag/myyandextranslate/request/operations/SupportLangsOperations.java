@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.foxykeep.datadroid.exception.ConnectionException;
 import com.foxykeep.datadroid.exception.CustomRequestException;
@@ -39,7 +40,9 @@ public final class SupportLangsOperations implements Operation {
     @Override
     public Bundle execute(Context context, Request request)
             throws ConnectionException, DataException, CustomRequestException {
-
+        /**
+         * 1. Proceeding network call
+         * */
         NetworkConnection connection = new NetworkConnection(context, PATH);
         HashMap<String, String> params = new HashMap<>();
         params.put("key", ApiKey.API_KEY);
@@ -47,10 +50,16 @@ public final class SupportLangsOperations implements Operation {
         connection.setParameters(params);
         NetworkConnection.ConnectionResult result = connection.execute();
         try {
+            /**
+             * 2. Converting network response to list of content values
+             * */
             List<ContentValues> parsedNetworkResponse = networkResponse2ContentValuesExtractor(result);
             if (parsedNetworkResponse.size() == 0) {
                 throw new DataException("server response is empty");
             }
+            /**
+             * 3. Getting the local snapshot of languages
+             * */
             List<ContentValues> localCopyOfData = new ArrayList<>();
             Cursor localData = context.getContentResolver().query(CONTENT_URI, new String[]{COLUMN_LANG_CODE, COLUMN_LANG_DESC}, null, null, null);
             if (localData.moveToFirst()) {
@@ -64,7 +73,12 @@ public final class SupportLangsOperations implements Operation {
                     localCopyOfData.add(item);
                 } while (localData.moveToNext());
             }
-
+            /**
+             * 4. Because we have 2 lists with values, we want to find out
+             * a) Values which we have locally, but api doesn't support them according to fresh api response
+             * b) Values which both in local and network versions of data, in order not to touch them
+             * c) Values which has in fresh network response, but not in local version of data, to insert them
+             * */
             Collection<ContentValues> toDelete = new HashSet<>(localCopyOfData);
             toDelete.removeAll(parsedNetworkResponse);
             String[] toDeleteSelection = new String[toDelete.size()];
@@ -72,14 +86,18 @@ public final class SupportLangsOperations implements Operation {
             for (ContentValues item : toDelete) {
                 toDeleteSelection[i] = item.getAsString(TranslatorContract.SupportLangs.COLUMN_LANG_CODE);
             }
+            /**
+             * 4.a*/
             context.getContentResolver().delete(CONTENT_URI, TranslatorContract.SupportLangs.COLUMN_LANG_CODE + "=?", toDeleteSelection);
-
+            /**
+             * 4.c*/
             Collection<ContentValues> toInsert = new HashSet<>(parsedNetworkResponse);
             toInsert.removeAll(localCopyOfData);
             context.getContentResolver().bulkInsert(CONTENT_URI, toInsert.toArray(new ContentValues[toInsert.size()]));
 
-        } catch (Exception ex) {
-            System.out.println("ess");
+        } catch (JSONException ex) {
+            Log.e("SupportLangOperations", "Problem with parsing JSON response");
+            throw new DataException("Error occured with server response handling");
         }
         return null;
     }

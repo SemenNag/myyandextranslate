@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.foxykeep.datadroid.requestmanager.Request;
 import com.foxykeep.datadroid.requestmanager.RequestManager;
@@ -29,15 +30,11 @@ import edu.semnag.myyandextranslate.request.TranslateRequestManager;
 
 /**
  * @author SemenNag
- *
- * List Fragment which shows available languages.
- *
- * @screen
- * ListView + SimpleCursorAdapter
- *
+ *         <p>
+ *         List Fragment which shows available languages.
+ * @screen ListView + SimpleCursorAdapter
  * @back end
  * SimpleCursorLoader + RequestManager
- *
  */
 
 public class LangSelectionFragment
@@ -184,16 +181,17 @@ public class LangSelectionFragment
 
     @Override
     public void onRequestConnectionError(Request request, int statusCode) {
+        Toast.makeText(getActivity(), "Problem with server", Toast.LENGTH_SHORT).show();
 
     }
 
     @Override
     public void onRequestDataError(Request request) {
-
+        Toast.makeText(getActivity(), "Problem with server", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRequestCustomError(Request request, Bundle resultData) {
-
+        Toast.makeText(getActivity(), "Problem with server", Toast.LENGTH_SHORT).show();
     }
 }

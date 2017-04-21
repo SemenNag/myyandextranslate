@@ -14,8 +14,13 @@ import java.util.Map;
 import edu.semnag.myyandextranslate.fragments.HistoryPageFragment;
 
 /**
- * Created by semna on 13.04.2017.
- */
+ *@author SemenNag
+ * Activity which holds working with history and favorate pages
+ * Implemented a ScreenSlidePageAdapter which enables working with 2 paged-fragment
+ * 1St page - simple history
+ * 2nd page - favorites list
+ *
+ * */
 
 public class HistoryActivity extends BaseActivity implements ViewPager.OnPageChangeListener {
     private ViewPager mPager;
@@ -43,19 +48,16 @@ public class HistoryActivity extends BaseActivity implements ViewPager.OnPageCha
 
     @Override
     public void onPageSelected(int position) {
-
         Fragment fragment = mPagerAdapter.getFragment(position);
         if (fragment != null) {
             fragment.onResume();
         }
     }
 
-
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
     }
-
 
     @Override
     public void onPageScrollStateChanged(int state) {
@@ -73,7 +75,7 @@ public class HistoryActivity extends BaseActivity implements ViewPager.OnPageCha
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
             mFragmentManager = fm;
-            mFragmentTags = new HashMap<Integer, String>();
+            mFragmentTags = new HashMap<>();
         }
 
         @Override
@@ -101,6 +103,9 @@ public class HistoryActivity extends BaseActivity implements ViewPager.OnPageCha
             return tabs[position];
         }
 
+        /**
+         * instateItem enables refresh state of page fragment mechanism
+         * */
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             Object object = super.instantiateItem(container, position);
@@ -112,7 +117,7 @@ public class HistoryActivity extends BaseActivity implements ViewPager.OnPageCha
             return object;
         }
 
-        public Fragment getFragment(int position) {
+        Fragment getFragment(int position) {
             Fragment fragment = null;
             String tag = mFragmentTags.get(position);
             if (tag != null) {

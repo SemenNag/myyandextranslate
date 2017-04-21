@@ -22,7 +22,8 @@ import edu.semnag.myyandextranslate.TranslateActivity;
 import edu.semnag.myyandextranslate.provider.TranslatorContract;
 
 /**
- * Created by semna on 31.03.2017.
+ * @author SemenNag
+ *         List Fragment with Loader and Custom ListAdapter - HistoryListAdapter
  */
 
 public class HistoryPageFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -39,7 +40,6 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
             TranslatorContract.TranslateRegistry.COLUMN_NAME_LANG_TO_DESC,
             TranslatorContract.TranslateRegistry.COLUMN_NAME_IS_FAV
     };
-
 
     @Nullable
     @Override
@@ -59,16 +59,23 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
                 R.id.history_row_translate_direction
         };
 
-
+        /**
+         * Configure list adapter
+         * */
         simpleCursorAdapter = new HistoryListAdapter(getActivity(), null, fromColumns, toViews, 0);
         setListAdapter(simpleCursorAdapter);
-
+        /**
+         * Register loader
+         * */
         getLoaderManager().initLoader(0, getArguments(), this);
 
         return inflater.inflate(R.layout.fragment_history_list, container, false);
 
     }
 
+    /**
+     * Not the best solution, each opening to restart whole loader
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -99,7 +106,10 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
         simpleCursorAdapter.swapCursor(null);
     }
 
-
+    /**
+     * Custom List Adapter
+     * Because one row contains different views with different on click handlers
+     */
     private class HistoryListAdapter extends SimpleCursorAdapter {
         Cursor cursor;
         LayoutInflater layoutInflater;
@@ -155,7 +165,11 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
                 isFavImage.setImageResource(imageIds[1]);
                 isFavImage.setTag(imageIds[1]);
             }
-
+            /**
+             * Making custom on click listener which^
+             * 1) Updateds record if it becomes if favorite and vise a verse
+             * 2) Replace drawing star, according to its isFav status
+             * */
             isFavImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -176,7 +190,7 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
                         imageView.setTag(imageIds[1]);
                     }
                     /**
-                     * updating db with marking
+                     * updating item in db with changing it isFav attribute
                      * */
                     int position = getListView().getPositionForView(v);
                     Cursor recordCursor = (Cursor) getListView().getItemAtPosition(position);
@@ -199,6 +213,10 @@ public class HistoryPageFragment extends ListFragment implements LoaderManager.L
 
     }
 
+    /**
+     * Custom click handler which fires to new TranslateActivity Intent
+     * when clicking on a row with history or favorite
+     */
     private class HistoryRowWithTranslateClickHandler implements View.OnClickListener {
         @Override
         public void onClick(View v) {
