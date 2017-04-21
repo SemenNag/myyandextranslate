@@ -51,14 +51,15 @@
     <EditText
         android:id="@+id/home_inputSourceText"
         android:layout_width="0dp"
-        android:layout_height="104dp"
+        android:layout_height="100dp"
         android:layout_marginLeft="2px"
         android:layout_marginRight="2px"
         android:background="@drawable/back_border"
         android:drawableBottom="@color/divider"
-        android:inputType="textAutoCorrect"
+        android:inputType="textAutoCorrect|textMultiLine"
         android:textColor="@color/primary_text"
         android:textSize="@dimen/font_size_large"
+        app:layout_constraintBottom_toTopOf="@+id/home_outPutText"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/translate_up_bar" />
@@ -66,12 +67,13 @@
     <TextView
         android:id="@+id/home_outPutText"
         android:layout_width="0dp"
-        android:layout_height="408dp"
+        android:layout_height="300dp"
         android:layout_marginLeft="2px"
         android:layout_marginRight="2px"
         android:background="@color/icons"
         android:textColor="@color/secondary_text"
         android:textSize="@dimen/font_size_medium"
+        app:layout_constraintBottom_toTopOf="@+id/yandex_license_link"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/home_inputSourceText" />
@@ -79,11 +81,14 @@
     <TextView
         android:id="@+id/yandex_license_link"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="0dp"
+        android:autoLink="web"
         android:background="@color/icons"
+        android:focusable="true"
         android:text="@string/yandex_lisence_text"
         android:textColor="@color/secondary_text"
         android:textSize="@dimen/font_size_medium"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/home_outPutText" />
