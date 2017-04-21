@@ -42,7 +42,6 @@ public class BaseActivity extends AppCompatActivity {
      */
     private static boolean isLaunch = true;
     /**
-     * FIXME dirty dirty code to save activities state
      * because all activities extends base activity
      * saveInsanceState alwayes overrides
      */
@@ -84,12 +83,17 @@ public class BaseActivity extends AppCompatActivity {
         }
         super.onSaveInstanceState(outState);
     }
-
+    /**
+     * method which prior to navigation calls
+     * necessary activity to start*/
     private void onNavClickedChangeActivity(int id) {
         Intent intent = null;
         switch (id) {
             case R.id.navigation_home:
                 intent = new Intent(this, TranslateActivity.class);
+                /**
+                 * Check whether was a some users inputs to restore
+                 * */
                 if (localInstanceState != null) {
                     intent.putExtras(localInstanceState);
                 }

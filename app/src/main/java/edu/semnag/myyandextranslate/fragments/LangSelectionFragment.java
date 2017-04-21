@@ -28,12 +28,20 @@ import edu.semnag.myyandextranslate.request.TranslateRequestFactory;
 import edu.semnag.myyandextranslate.request.TranslateRequestManager;
 
 /**
- * Created by semna on 05.04.2017.
+ * @author SemenNag
+ *
+ * List Fragment which shows available languages.
+ *
+ * @screen
+ * ListView + SimpleCursorAdapter
+ *
+ * @back end
+ * SimpleCursorLoader + RequestManager
+ *
  */
 
-public class LangSelectionFragment extends ListFragment
-        implements LoaderManager.LoaderCallbacks<Cursor>,
-        RequestManager.RequestListener {
+public class LangSelectionFragment
+        extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>, RequestManager.RequestListener {
     private SimpleCursorAdapter mAdapter;
     private TranslateRequestManager requestManager;
     private TranslateActivity.ListFragmentItemClickListener asker;

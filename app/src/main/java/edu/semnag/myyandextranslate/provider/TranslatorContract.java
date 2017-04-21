@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
- * Created by semna on 03.04.2017.
+ * @author SemenNag
  */
 
 public class TranslatorContract {

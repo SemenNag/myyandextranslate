@@ -25,8 +25,25 @@ import edu.semnag.myyandextranslate.request.operations.TranslateOperations;
 /**
  * @author SemenNag
  *         This home activity contains home page with translations tools
- *         and plays role of parent activity for history activity in order to add nav bar to its child
- *         This activity contains FrameLaout which would be rebased according to nav option selected
+ * @screen In the up part of screen there hand made "app tool bar" with controls
+ * over selecting language to translate from and tranlsate to. Clicking on field with
+ * on fields with langs selections, calls fragment with lists of avaialable languages.
+ * <p>
+ * In the middle of the screen 2 TextViews. First plays role of input field
+ * for text to translate, second -> output text translate from api.
+ * @back end
+ * Api calls build around DataDroid module.
+ * class TranslateRequestManager - engine of request manager, which executes network connections
+ * class RestService - a router between RestService operations (Services, which works out of UIThread)
+ * class TranslateRequestFactory - enumaration of  Request types
+ * <p>
+ * There are 2 types of operations: SupportLangOperations and TranslateOperations
+ * class SupportLangOperations - incapsulates logic of api call to get available languages
+ * class TranslateOperation - incapsulates logic of api call to translate source text according
+ * to language selections.
+ * @data storing and retreving to client
+ * All operations works with ContentProvider when storing data: class LocalContentProvider
+ * LocalContentProvider uses SqlLite, build according to contract TranslatorContract
  */
 
 public class TranslateActivity extends BaseActivity {
@@ -41,13 +58,12 @@ public class TranslateActivity extends BaseActivity {
 
     /**
      * Request manager build around DataDroid module,
-     * which picks up appropriate operation (service) to yandex translate api according to request type
+     * which picks up appropriate operation (service) to translate api according to request type
      * and executes
      */
     private TranslateRequestManager requestManager;
     /**
      * Inner class which provides a tool to async listen of api request execution
-     * see @line TODO provide link
      */
     private TranslateRequestListener translateRequestListiner;
     /**
@@ -190,6 +206,9 @@ public class TranslateActivity extends BaseActivity {
         Toast.makeText(this, problem, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * inner class request listener for async wait of api translation results
+     */
     private class TranslateRequestListener implements RequestManager.RequestListener {
         private String error_message = "Problems with getting the translation";
 
@@ -225,11 +244,20 @@ public class TranslateActivity extends BaseActivity {
 
     }
 
+    /**
+     * inner class used to assign to lang selections fields
+     * to let them interact with fragment with list of available
+     * languages
+     */
     public class LangSelectionOnClickHandler implements View.OnClickListener,
             ListFragmentItemClickListener {
         private EditText sourceView;
         private int sourceId;
 
+        /**
+         * on click catchs up the text view,
+         * which want to select language
+         */
         @Override
         public void onClick(View v) {
             sourceView = (EditText) v;
@@ -237,6 +265,10 @@ public class TranslateActivity extends BaseActivity {
             askForLangSelection(this);
         }
 
+        /**
+         * method which uses fragment to set in the request field
+         * the selected in list value of language
+         */
         @Override
         public void onListFragmentItemClicked(Map<String, String> values) {
             sourceView.setText(values.get(ListFragmentItemClickListener.LANG_SELECTION));
@@ -252,13 +284,19 @@ public class TranslateActivity extends BaseActivity {
     }
 
     private void askForLangSelection(ListFragmentItemClickListener asker) {
-
+        /**
+         * Before asking for available languages
+         * we check the inet connection
+         * */
         if (!isOnline()) {
             notifyUsersWithProblem("Please check internet connection");
             return;
 
         }
-
+        /**
+         * Clear all EditText.setErrors()
+         * because here we are working with lang selection
+         * */
         clearAllEditTextErrors();
 
         langSelectionFragment.setItemClickListener(asker);
@@ -268,6 +306,9 @@ public class TranslateActivity extends BaseActivity {
                 .addToBackStack(null).commit();
     }
 
+    /**
+     * Api call for translation
+     */
     private void makeRequestToTranslate(String source) {
         if (validateViewReadyToTranslate()) {
             Request request = new Request(TranslateRequestFactory.REQUEST_TRANSLATE);
@@ -292,7 +333,6 @@ public class TranslateActivity extends BaseActivity {
             sourceTextView.requestFocus();
             ok = false;
         }
-
         /**
          * 2. Checking lang to
          * */
@@ -302,8 +342,6 @@ public class TranslateActivity extends BaseActivity {
             toLangSelectionView.requestFocus();
             ok = false;
         }
-
-
         /**
          * 3. Checking lang from
          * */
@@ -313,12 +351,13 @@ public class TranslateActivity extends BaseActivity {
             fromLangSelectionView.requestFocus();
             ok = false;
         }
-
-
         return ok;
     }
 
-
+    /**
+     * Operation which changes language selections
+     * between from language and to language
+     */
     private void changeTranslateDireaction() {
         String from = fromLangSelectionView.getText().toString();
         String to = toLangSelectionView.getText().toString();
